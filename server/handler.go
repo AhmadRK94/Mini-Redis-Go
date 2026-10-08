@@ -23,7 +23,7 @@ func (s *Server) handleConnection(conn net.Conn) {
 		if len(inputs) == 0 {
 			continue
 		}
-		cmd := inputs[0]
+		cmd := strings.ToUpper(inputs[0])
 		args := inputs[1:]
 		switch cmd {
 		case "GET":

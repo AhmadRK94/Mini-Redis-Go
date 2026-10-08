@@ -99,7 +99,7 @@ func (s *Store) Get(key string) (string, error) {
 	return v.Value, nil
 }
 
-// get expiration if set -1 for data with no expiration, -2 if not exist, positive values is in seconds
+// get expiration if exist. -1 for data with no expiration, -2 if not exist, positive values is in seconds
 func (s *Store) GetTTL(key string) int {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
@@ -115,6 +115,7 @@ func (s *Store) GetTTL(key string) int {
 
 }
 
+// delete data for specified key
 func (s *Store) Delete(key string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -124,38 +125,4 @@ func (s *Store) Delete(key string) error {
 	}
 	delete(s.data, key)
 	return nil
-}
-
-// Cleanup functionality for deleting expired data
-func (s *Store) cleanupExpired() {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	now := time.Now()
-
-	for key, entry := range s.data {
-		if !entry.ExpiresAt.IsZero() && !now.Before(entry.ExpiresAt) {
-			delete(s.data, key)
-		}
-	}
-}
-
-func (s *Store) StartCleanup(
-	interval time.Duration,
-	stop <-chan struct{},
-) {
-	ticker := time.NewTicker(interval)
-
-	go func() {
-		defer ticker.Stop()
-
-		for {
-			select {
-			case <-ticker.C:
-				s.cleanupExpired()
-			case <-stop:
-				return
-			}
-		}
-	}()
 }

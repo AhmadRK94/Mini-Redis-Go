@@ -69,7 +69,7 @@ func (s *Server) handleConnection(conn net.Conn) {
 				fmt.Fprintf(conn, "Error invalid expiration time: %s\n", err.Error())
 				continue
 			}
-			err = s.store.SetTTL(args[0], args[1], time.Duration(ttl)*time.Second)
+			err = s.store.SetWithTTL(args[0], args[1], time.Duration(ttl)*time.Second)
 			if err != nil {
 				fmt.Fprintln(conn, "Error:", err)
 				continue

@@ -12,16 +12,16 @@ import (
 )
 
 func main() {
-	st := store.NewStore()
+	store := store.NewStore()
 
-	if err := st.Load("data_dump.json"); err != nil {
+	if err := store.Load("data_dump.json"); err != nil {
 		log.Printf("Could not load data: %v", err)
 	}
 
 	stopCleanup := make(chan struct{})
-	st.StartCleanup(time.Second, stopCleanup)
+	store.StartCleanup(time.Second, stopCleanup)
 
-	srv := server.NewServer(st, ":6379")
+	server := server.NewServer(store, ":6379")
 
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
@@ -30,16 +30,16 @@ func main() {
 	go func() {
 		<-signals
 		log.Println("Shutting down...")
-		_ = srv.Shutdown()
+		_ = server.Shutdown()
 	}()
 
-	if err := srv.Start(); err != nil {
+	if err := server.Start(); err != nil {
 		log.Printf("Server stopped: %v", err)
 	}
 
 	close(stopCleanup)
 
-	if err := st.Save("data_dump.json"); err != nil {
+	if err := store.Save("data_dump.json"); err != nil {
 		log.Printf("Could not save data: %v", err)
 	} else {
 		log.Println("Data saved.")

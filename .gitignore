@@ -31,3 +31,15 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Persistence files
+data_dump.json
+*.aof

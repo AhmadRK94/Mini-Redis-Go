@@ -1,6 +1,7 @@
 package server
 
 import (
+	"errors"
 	"fmt"
 	"net"
 
@@ -8,8 +9,9 @@ import (
 )
 
 type Server struct {
-	store *store.Store
-	port  string
+	store    *store.Store
+	port     string
+	listener net.Listener
 }
 
 func NewServer(store *store.Store, port string) *Server {
@@ -24,14 +26,28 @@ func (s *Server) Start() error {
 	if err != nil {
 		return err
 	}
+
+	s.listener = listener
 	defer listener.Close()
-	fmt.Printf("Server start running at localhost:%s...\n", s.port)
+
+	fmt.Printf("Server running at localhost:%s...\n", s.port)
+
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
-			continue
+			if errors.Is(err, net.ErrClosed) {
+				return nil
+			}
+			return err
 		}
+
 		go s.handleConnection(conn)
 	}
+}
 
+func (s *Server) Shutdown() error {
+	if s.listener == nil {
+		return nil
+	}
+	return s.listener.Close()
 }

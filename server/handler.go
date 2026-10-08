@@ -57,6 +57,17 @@ func (s *Server) handleConnection(conn net.Conn) {
 				continue
 			}
 			fmt.Fprintln(conn, "OK")
+		case "DEL":
+			if len(args) != 1 {
+				fmt.Fprintln(conn, "Error invalid number of arguments")
+				continue
+			}
+			err := s.store.Delete(args[0])
+			if err != nil {
+				fmt.Fprintf(conn, "ERROR %s\n", err)
+				continue
+			}
+			fmt.Fprintln(conn, "OK")
 		default:
 			fmt.Fprintln(conn, "ERROR unknown command")
 		}

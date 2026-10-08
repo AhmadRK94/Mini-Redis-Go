@@ -47,3 +47,14 @@ func (s *Store) Get(key string) (string, error) {
 	}
 	return v, nil
 }
+
+func (s *Store) Delete(key string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	_, exist := s.data[key]
+	if !exist {
+		return errors.New("Key doesn't exist.\n")
+	}
+	delete(s.data, key)
+	return nil
+}

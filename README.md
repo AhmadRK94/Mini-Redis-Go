@@ -1,4 +1,4 @@
-# Mini Redis — A Redis-Inspired Key-Value Store in Go
+# Nano Redis — A Redis-Inspired Key-Value Store in Go
 
 A lightweight, Redis-inspired in-memory key-value store built from scratch in Go. The project explores TCP networking, concurrent programming, key expiration, and data persistence while implementing a simple text-based command protocol.
 

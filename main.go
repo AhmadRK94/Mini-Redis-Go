@@ -2,9 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
 	"www.github.com/AhmadRK94/Mini-Redis-Go/server"
@@ -19,25 +16,13 @@ func main() {
 	}
 
 	stopCleanup := make(chan struct{})
+	defer close(stopCleanup)
 	store.StartCleanup(time.Second, stopCleanup)
 
-	server := server.NewServer(store, ":6379")
-
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
-	defer signal.Stop(signals)
-
-	go func() {
-		<-signals
-		log.Println("Shutting down...")
-		_ = server.Shutdown()
-	}()
-
-	if err := server.Start(); err != nil {
+	server := server.NewServer(store)
+	if err := server.ListenAndServe(":6379"); err != nil {
 		log.Printf("Server stopped: %v", err)
 	}
-
-	close(stopCleanup)
 
 	if err := store.Save("data_dump.json"); err != nil {
 		log.Printf("Could not save data: %v", err)

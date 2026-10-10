@@ -72,7 +72,6 @@ The server uses a simple, text-based command protocol. Commands are sent as line
 | `EXPIRE` | Set a key's expiration in seconds   | `EXPIRE name 60`   |
 | `TTL`    | Get the remaining lifetime of a key | `TTL name`         |
 
-
 ### Connect to the server
 
 You can use `netcat` if it is installed:

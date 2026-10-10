@@ -6,6 +6,12 @@ import (
 	"time"
 )
 
+var (
+	ErrKeyExist    = errors.New("Key already exist.\n")
+	ErrEmptyKey    = errors.New("Invalid key: Empty key.\n")
+	ErrKeyNotExist = errors.New("Key doesn't exist.\n")
+)
+
 type Entry struct {
 	Value     string
 	ExpiresAt time.Time
@@ -26,13 +32,13 @@ func NewStore() *Store {
 
 func (s *Store) set(key, value string, forceUpdate bool) error {
 	if key == "" {
-		return errors.New("Invalid key: Empty key.")
+		return ErrEmptyKey
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	_, exists := s.data[key]
 	if exists && !forceUpdate {
-		return errors.New("Key already exist.\n")
+		return ErrKeyExist
 	}
 	e := Entry{
 		Value:     value,
@@ -56,13 +62,13 @@ func (s *Store) SetNX(key, value string) error {
 // SetTTL create or overwrite the existing data with expire time.
 func (s *Store) SetWithTTL(key, value string, ttl time.Duration) error {
 	if key == "" {
-		return errors.New("Invalid key: Empty key.")
+		return ErrEmptyKey
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	_, exists := s.data[key]
 	if exists {
-		return errors.New("Key already exist.\n")
+		return ErrKeyExist
 	}
 	e := Entry{
 		Value:     value,
@@ -76,13 +82,13 @@ func (s *Store) SetWithTTL(key, value string, ttl time.Duration) error {
 // set expiration for existing key
 func (s *Store) SetExpire(key string, ttl time.Duration) error {
 	if key == "" {
-		return errors.New("Invalid key: Empty key.")
+		return ErrEmptyKey
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	v, exists := s.data[key]
 	if !exists {
-		return errors.New("Key doesn't exist.\n")
+		return ErrKeyNotExist
 	}
 	v.ExpiresAt = time.Now().Add(ttl)
 	s.data[key] = v
@@ -93,21 +99,21 @@ func (s *Store) SetExpire(key string, ttl time.Duration) error {
 // return value for specify key if exist.
 func (s *Store) Get(key string) (string, error) {
 	if key == "" {
-		return "", errors.New("Invalid key: Empty key.")
+		return "", ErrEmptyKey
 	}
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	v, exists := s.data[key]
 
 	if !exists {
-		return "", errors.New("key doesn't exist.\n")
+		return "", ErrKeyNotExist
 	}
 
 	expired := !v.ExpiresAt.IsZero() &&
 		!time.Now().Before(v.ExpiresAt)
 
 	if expired {
-		return "", errors.New("key doesn't exist.\n")
+		return "", ErrKeyNotExist
 	}
 
 	return v.Value, nil
@@ -134,13 +140,13 @@ func (s *Store) GetTTL(key string) int {
 // delete data for specified key
 func (s *Store) Delete(key string) error {
 	if key == "" {
-		return errors.New("Invalid key: Empty key.")
+		return ErrEmptyKey
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	_, exists := s.data[key]
 	if !exists {
-		return errors.New("Key doesn't exist.\n")
+		return ErrKeyNotExist
 	}
 	delete(s.data, key)
 	return nil

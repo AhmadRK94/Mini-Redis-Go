@@ -9,7 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"www.github.com/AhmadRK94/Mini-Redis-Go/store"
+	"www.github.com/AhmadRK94/nanoredis/store"
 )
 
 type Server struct {

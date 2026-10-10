@@ -4,8 +4,8 @@ import (
 	"log"
 	"time"
 
-	"www.github.com/AhmadRK94/Mini-Redis-Go/server"
-	"www.github.com/AhmadRK94/Mini-Redis-Go/store"
+	"www.github.com/AhmadRK94/nanoredis/server"
+	"www.github.com/AhmadRK94/nanoredis/store"
 )
 
 func main() {

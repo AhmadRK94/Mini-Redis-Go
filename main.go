@@ -15,9 +15,8 @@ func main() {
 		log.Printf("Could not load data: %v", err)
 	}
 
-	stopCleanup := make(chan struct{})
-	defer close(stopCleanup)
-	store.StartCleanup(time.Second, stopCleanup)
+	store.StartCleanup(time.Second)
+	defer store.StopCleanup()
 
 	server := server.NewServer(store)
 	if err := server.ListenAndServe(":6379"); err != nil {

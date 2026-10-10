@@ -12,8 +12,10 @@ type Entry struct {
 }
 
 type Store struct {
-	mu   sync.RWMutex
-	data map[string]Entry
+	mu        sync.RWMutex
+	data      map[string]Entry
+	stopClean chan struct{}
+	cleanOnce sync.Once
 }
 
 func NewStore() *Store {

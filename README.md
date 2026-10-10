@@ -32,8 +32,8 @@ A lightweight, Redis-inspired in-memory key-value store built from scratch in Go
 Clone the repository:
 
 ```bash
-git clone https://github.com/AhmadRK94/Mini-Redis-Go.git
-cd mini-redis-go
+git clone https://github.com/AhmadRK94/nanoredis.git
+cd nanoredis
 ```
 
 Initialize dependencies if needed:
@@ -53,7 +53,7 @@ The server listens on port `6379` by default.
 To build an executable:
 
 ```bash
-go build -o mini-redis .
+go build -o nanoredis.exe .
 ```
 
 Then run the generated executable.
